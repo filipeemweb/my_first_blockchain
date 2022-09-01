@@ -20,13 +20,13 @@ class Blockchain:
         self.chain = []
         
         # Create the genesis block
-        genesis_block = self.create_block(proof = 1, previous_hash = '0')
+        genesis_block = self.create_block(proof = 1, previous_hash = '0000')
         self.add_new_block(genesis_block)
     
     #=====================================================
     
     def hash_block(self, block):
-        # Encodes a JSON formated block into string
+        # Encodes a JSON formatted block into string
         encoded_block = json.dumps(block, sort_keys=True).encode()
         
         # Gets the hex hash from the encoded_block
@@ -95,13 +95,8 @@ class Blockchain:
         # Initialing with the first block
         previous_block = chain[0]
         
-        for current_block in chain:
-            
-            # Get block proof
-            current_proof = current_block['proof']
-            previous_proof = previous_block['proof']
-            
-            hash_operation = self.hash_operation(current_proof, previous_proof)
+        for current_block in chain: 
+            hash_operation = self.hash_block(current_block)
             
             if current_block['previous_hash'] != self.hash_block(previous_block):
                 return False
@@ -143,12 +138,22 @@ def mine_block():
     
     return jsonify(response), 200
 
-# Getting the full Blockcahin
+# Getting the full Blockchain
 @app.route('/blockchain', methods = ['GET'])
 def get_chain():
     response = {'chain': blockchain.chain, 'length': len(blockchain.chain)}
     
     return jsonify(response), 200
+
+# Validating Blockchain
+@app.route('/blockchain/validate', methods = ['GET'])
+def validate_chain():
+    is_chain_valid = blockchain.is_chain_valid(blockchain.chain)
+
+    response = {'chain': blockchain.chain, 'length': len(blockchain.chain), 'is_valid': is_chain_valid}
+    
+    return jsonify(response), 200
+
 
 # Running the app
 app.run(host = '0.0.0.0', port = 5000)
