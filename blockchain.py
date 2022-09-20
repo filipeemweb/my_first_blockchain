@@ -97,6 +97,9 @@ class Blockchain:
         
         for current_block in chain: 
             hash_operation = self.hash_block(current_block)
+
+            if current_block['index'] == 1:
+                continue
             
             if current_block['previous_hash'] != self.hash_block(previous_block):
                 return False
